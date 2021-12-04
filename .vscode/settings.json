@@ -1,0 +1,4 @@
+{
+  "cmake.configureOnOpen": true,
+  "javascript.preferences.importModuleSpecifier": "non-relative"
+}

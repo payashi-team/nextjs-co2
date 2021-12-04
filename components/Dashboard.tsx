@@ -1,107 +1,89 @@
-import { ref } from "@firebase/database";
-import { onValue } from "firebase/database";
-import { useEffect, useState, VFC } from "react";
+import React, { useEffect, VFC } from "react";
 import Chart from "react-google-charts";
-import { db } from "../lib/firebase";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Grid from "@mui/material/Grid";
-
-type SENSOR = {
-  X: number;
-  Y: number;
-  Z: number;
-  sensor_timestamp: number;
-};
+import Head from "next/head";
+import useSWR from "swr";
+import { SensorsRes } from "pages/api/sensors";
+import { Sensor } from "sensor";
 
 const Dashboard: VFC = () => {
-  const [data, setData] = useState<Array<Array<number | Date>> | null>(null);
-  const [duration, setDuration] = useState<number>(60); // in minutes
-  const [filtered, setFiltered] = useState<Array<Array<number | Date>>>([]);
-  const accRef = ref(db, "/IMU_LSM6DS3");
+  const fetcher = async (url: string) => fetch(url).then((res) => res.json());
+  const [sensors, setSensors] = React.useState<Array<Sensor> | null>(null);
+  // const [error, setError] = React.useState<string | undefined>(undefined);
+  const { data, error } = useSWR<SensorsRes>(`/api/sensors`, fetcher, {
+    refreshInterval: 10000,
+  });
   useEffect(() => {
-    onValue(accRef, (snapshot) => {
-      const obj = snapshot.val() as Record<string, SENSOR>;
-      if (obj) {
-        let arr = [] as Array<Array<number | Date>>;
-        for (const itr in obj) {
-          arr.push([
-            new Date(obj[itr].sensor_timestamp),
-            obj[itr].X,
-            obj[itr].Y,
-            obj[itr].Z,
-          ]);
-        }
-        setData(arr);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (data == null) {
-      setFiltered([]);
+    if (data?.acc) {
+      setSensors(data.acc);
     } else {
-      const flt = data.filter((item) => {
-        if (item[0] instanceof Date) {
-          const t = new Date().getTime() - item[0].getTime();
-          return t < duration * 1000 * 60;
-        } else {
-          return true;
-        }
-      });
-      setFiltered(flt);
+      setSensors(null);
     }
-  }, [data, duration]);
+  }, [data]);
+  if (error) return <div>failed to load</div>;
 
   return (
     <>
-      <ButtonGroup
-        variant="contained"
-        aria-label="outlined primary button group"
-      >
-        <Button onClick={() => setDuration(60 * 24 * 365 * 100)}>all</Button>
-        <Button onClick={() => setDuration(60 * 24)}>1 day</Button>
-        <Button onClick={() => setDuration(60)}>1 hour</Button>
-        <Button onClick={() => setDuration(1)}>1 min</Button>
-      </ButtonGroup>
-      {data == null ? (
+      <Head>
+        <title>USAOMOCHI</title>
+      </Head>
+      {!sensors ? (
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={true}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-      ) : filtered.length > 0 ? (
-        <Chart
-          width={"100vw"}
-          height={"80vh"}
-          chartType="LineChart"
-          data={[["x", "X", "Y", "Z"], ...filtered]}
-          formatters={[
-            {
-              type: "DateFormat",
-              column: 0,
-              options: {
-                formatType: "short",
+      ) : sensors.length > 0 ? (
+        <>
+          {/* <ButtonGroup
+            variant="contained"
+            aria-label="outlined primary button group"
+          >
+            <Button>all</Button>
+          </ButtonGroup> */}
+          <Chart
+            width={"100vw"}
+            height={"80vh"}
+            chartType="LineChart"
+            data={[
+              ["x", "X", "Y", "Z"],
+              ...sensors.map((sensor) => [
+                new Date(sensor.sensor_timestamp),
+                sensor.X,
+                sensor.Y,
+                sensor.Z,
+              ]),
+            ]}
+            formatters={[
+              {
+                type: "DateFormat",
+                column: 0,
+                options: {
+                  formatType: "short",
+                },
               },
-            },
-          ]}
-          options={{
-            hAxis: {
-              title: "Time",
-            },
-            vAxis: {
-              title: "Acceleration",
-            },
-            series: {
-              0: { curveType: "function" },
-              1: { curveType: "function" },
-              2: { curveType: "function" },
-            },
-          }}
-        />
+            ]}
+            loader={<div>Loading Chart</div>}
+            options={{
+              hAxis: {
+                title: "Time",
+              },
+              vAxis: {
+                title: "Acceleration",
+              },
+              series: {
+                0: { curveType: "function" },
+                1: { curveType: "function" },
+                2: { curveType: "function" },
+              },
+            }}
+          />
+        </>
       ) : (
         <Grid
           container

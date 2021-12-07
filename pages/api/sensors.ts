@@ -15,9 +15,9 @@ export default async function handler(
 ) {
   // const start = req.query.start ? parseInt(req.query.start as string) : 0;
   const snap = await db
-    .ref("/IMU_LSM6DS3")
+    .ref("/SCD30")
     .orderByChild("sensor_timestamp")
-    .limitToLast(100)
+    .limitToLast(1000)
     .get();
   // .orderByChild("sensor_timestamp")
   // .startAt(start)

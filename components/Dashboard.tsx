@@ -15,7 +15,7 @@ const Dashboard: VFC = () => {
   const [sensors, setSensors] = React.useState<Array<Sensor> | null>(null);
   // const [error, setError] = React.useState<string | undefined>(undefined);
   const { data, error } = useSWR<SensorsRes>(`/api/sensors`, fetcher, {
-    refreshInterval: 10000,
+    refreshInterval: 2000,
   });
   useEffect(() => {
     if (data?.acc) {
@@ -49,15 +49,19 @@ const Dashboard: VFC = () => {
           <Chart
             width={"100vw"}
             height={"80vh"}
-            chartType="LineChart"
+            chartType="Line"
             data={[
-              ["x", "X", "Y", "Z"],
-              ...sensors.map((sensor) => [
-                new Date(sensor.sensor_timestamp),
-                sensor.X,
-                sensor.Y,
-                sensor.Z,
-              ]),
+              ["x", "temp", "co2"],
+              ...sensors.map((sensor) => {
+                return [
+                  new Date(sensor.sensor_timestamp),
+                  // sensor.X,
+                  // sensor.Y,
+                  // sensor.Z,
+                  sensor.temp,
+                  sensor.co2,
+                ];
+              }),
             ]}
             formatters={[
               {
@@ -70,16 +74,24 @@ const Dashboard: VFC = () => {
             ]}
             loader={<div>Loading Chart</div>}
             options={{
-              hAxis: {
-                title: "Time",
-              },
-              vAxis: {
-                title: "Acceleration",
+              chart: {
+                title: "CO2, Temperature",
               },
               series: {
-                0: { curveType: "function" },
-                1: { curveType: "function" },
-                2: { curveType: "function" },
+                0: { axis: "Temps" },
+                1: { axis: "CO2" },
+              },
+              // hAxis: {
+              //   title: "Time",
+              // },
+              // vAxis: {
+              //   title: "co2",
+              // },
+              axes: {
+                y: {
+                  Temps: { label: "Temps (Celsius)" },
+                  Daylight: { label: "CO2 (ppm)" },
+                },
               },
             }}
           />

@@ -8,6 +8,7 @@ import Grid from "@mui/material/Grid";
 import useSWR from "swr";
 import { SensorsRes } from "pages/api/sensors";
 import { Sensor } from "sensor";
+import Container from "@mui/material/Container";
 
 const Dashboard: VFC = () => {
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
@@ -26,7 +27,7 @@ const Dashboard: VFC = () => {
   if (error) return <div>failed to load</div>;
 
   return (
-    <>
+    <Container maxWidth="lg">
       {!sensors ? (
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -43,11 +44,11 @@ const Dashboard: VFC = () => {
             <Button>all</Button>
           </ButtonGroup> */}
           <Chart
-            width={"100vw"}
-            height={"60vw"}
+            width={"100%"}
+            height={"60vh"}
             chartType="Line"
             data={[
-              ["Time", "Tempreture", "CO2"],
+              ["Time", "Temperetures", "CO2"],
               ...sensors.map((sensor) => {
                 return [
                   new Date(sensor.sensor_timestamp),
@@ -71,10 +72,11 @@ const Dashboard: VFC = () => {
             loader={<div>Loading Chart</div>}
             options={{
               chart: {
-                title: "CO2, Temperature",
+                title: "CO2, Temperatures",
+                // legend: { position: "top", alignment: "start" },
               },
               series: {
-                0: { axis: "Temps" },
+                0: { axis: "Temperatures" },
                 1: { axis: "CO2" },
               },
               // hAxis: {
@@ -90,6 +92,32 @@ const Dashboard: VFC = () => {
                 },
               },
             }}
+            // controls={[
+            //   {
+            //     controlType: "ChartRangeFilter",
+            //     options: {
+            //       filterColumnIndex: 0,
+            //       ui: {
+            //         chartType: "LineChart",
+            //         chartOptions: {
+            //           chartArea: { width: "90%", height: "50%" },
+            //           hAxis: { baselineColor: "none" },
+            //         },
+            //       },
+            //     },
+            //     controlPosition: "bottom",
+            //     controlWrapperParams: {
+            //       state: {
+            //         range: {
+            //           start: new Date(sensors[0].sensor_timestamp),
+            //           end: new Date(
+            //             sensors[sensors.length - 1].sensor_timestamp
+            //           ),
+            //         },
+            //       },
+            //     },
+            //   },
+            // ]}
           />
         </>
       ) : (
@@ -103,7 +131,7 @@ const Dashboard: VFC = () => {
           </Grid>
         </Grid>
       )}
-    </>
+    </Container>
   );
 };
 

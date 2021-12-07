@@ -17,7 +17,7 @@ export default async function handler(
   const snap = await db
     .ref("/SCD30")
     .orderByChild("sensor_timestamp")
-    .limitToLast(100)
+    .limitToLast(500)
     .get();
   // .orderByChild("sensor_timestamp")
   // .startAt(start)

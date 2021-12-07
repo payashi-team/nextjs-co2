@@ -17,11 +17,10 @@ export default async function handler(
   const snap = await db
     .ref("/SCD30")
     .orderByChild("sensor_timestamp")
-    .limitToLast(1000)
+    .limitToLast(100)
     .get();
   // .orderByChild("sensor_timestamp")
   // .startAt(start)
-  console.log(snap.exists());
 
   const data = snap.val() as { [key: string]: Sensor };
 

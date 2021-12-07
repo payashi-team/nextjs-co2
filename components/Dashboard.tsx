@@ -5,7 +5,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Grid from "@mui/material/Grid";
-import Head from "next/head";
 import useSWR from "swr";
 import { SensorsRes } from "pages/api/sensors";
 import { Sensor } from "sensor";
@@ -28,9 +27,6 @@ const Dashboard: VFC = () => {
 
   return (
     <>
-      <Head>
-        <title>USAOMOCHI</title>
-      </Head>
       {!sensors ? (
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -48,10 +44,10 @@ const Dashboard: VFC = () => {
           </ButtonGroup> */}
           <Chart
             width={"100vw"}
-            height={"80vh"}
+            height={"60vw"}
             chartType="Line"
             data={[
-              ["x", "temp", "co2"],
+              ["Time", "Tempreture", "CO2"],
               ...sensors.map((sensor) => {
                 return [
                   new Date(sensor.sensor_timestamp),

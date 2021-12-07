@@ -71,59 +71,30 @@ const Dashboard: VFC = () => {
             ]}
             loader={<div>Loading Chart</div>}
             options={{
+              legend: { position: "none" },
               chart: {
                 title: "CO2, Temperatures",
-                // legend: { position: "top", alignment: "start" },
               },
               series: {
-                0: { axis: "Temperatures" },
-                1: { axis: "CO2" },
+                0: {
+                  axis: "Temperatures",
+                  color: "blue",
+                },
+                1: { axis: "CO2", color: "red" },
               },
-              // hAxis: {
-              //   title: "Time",
-              // },
-              // vAxis: {
-              //   title: "co2",
-              // },
               axes: {
                 y: {
-                  Temps: { label: "Temps (Celsius)" },
-                  Daylight: { label: "CO2 (ppm)" },
+                  Temperatures: { label: "Temps (Celsius)" },
+                  CO2: { label: "CO2 (ppm)" },
                 },
               },
             }}
-            // controls={[
-            //   {
-            //     controlType: "ChartRangeFilter",
-            //     options: {
-            //       filterColumnIndex: 0,
-            //       ui: {
-            //         chartType: "LineChart",
-            //         chartOptions: {
-            //           chartArea: { width: "90%", height: "50%" },
-            //           hAxis: { baselineColor: "none" },
-            //         },
-            //       },
-            //     },
-            //     controlPosition: "bottom",
-            //     controlWrapperParams: {
-            //       state: {
-            //         range: {
-            //           start: new Date(sensors[0].sensor_timestamp),
-            //           end: new Date(
-            //             sensors[sensors.length - 1].sensor_timestamp
-            //           ),
-            //         },
-            //       },
-            //     },
-            //   },
-            // ]}
           />
         </>
       ) : (
         <Grid
           container
-          sx={{ width: "100vw", height: "80vh" }}
+          sx={{ width: "100vw", height: "60vh" }}
           justifyContent="center"
         >
           <Grid item>

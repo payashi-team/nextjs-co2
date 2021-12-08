@@ -3,7 +3,6 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
 import useSWR from "swr";
-import { SensorsRes } from "pages/api/sensors";
 import { Sensor } from "sensor";
 import Container from "@mui/material/Container";
 import Co2Card from "@components/Co2Card";
@@ -19,12 +18,16 @@ import { useMediaQuery, useTheme } from "@mui/material";
 const Dashboard: VFC = () => {
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
   const [sensors, setSensors] = React.useState<Array<Sensor> | null>(null);
-  const { data, error } = useSWR<SensorsRes>(`/api/sensors`, fetcher, {
-    refreshInterval: 2000,
-  });
+  const { data, error } = useSWR<{ vals: Array<Sensor> }>(
+    `/api/realtime`,
+    fetcher,
+    {
+      refreshInterval: 2000,
+    }
+  );
   useEffect(() => {
-    if (data?.acc) {
-      setSensors(data.acc);
+    if (data?.vals) {
+      setSensors(data.vals);
     } else {
       setSensors(null);
     }

@@ -4,31 +4,35 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Sensor } from "sensor";
 
 export type SensorsRes = {
-  acc: Array<Sensor>;
+  vals: Array<Sensor>;
 };
-
-// TODO: add DELETE method
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<SensorsRes>
 ) {
-  const limit = 100;
-  // const start = req.query.start ? parseInt(req.query.start as string) : 0;
+  // const limit = 3000;
+  const start = parseInt(req.query.start as string);
+  const end = parseInt(req.query.end as string);
   const snap = await db
     .ref("/SCD30")
     .orderByChild("sensor_timestamp")
-    .startAfter(Date.now() - 1000 * limit * 2 * 2)
-    .limitToLast(limit)
+    .startAt(start || 0)
+    .endAt(end || 0)
     .get();
-  // .orderByChild("sensor_timestamp")
-  // .startAt(start)
 
   const data = snap.val() as { [key: string]: Sensor };
 
-  const acc: Array<Sensor> = [];
+  const vals: Array<Sensor> = [];
+  let i = 0;
+  const len = Object.keys(data).length;
   for (const key in data) {
-    acc.push(data[key]);
+    i++;
+    if (i >= len / 1000) {
+      vals.push(data[key]);
+      i = 0;
+    }
   }
-  res.status(200).json({ acc });
+
+  res.status(200).json({ vals });
 }

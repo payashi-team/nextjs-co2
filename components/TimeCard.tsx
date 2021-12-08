@@ -1,7 +1,7 @@
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { formatDate } from "@lib/utils";
+import { formatDate, formatDuration } from "@lib/utils";
 import React, { VFC } from "react";
 import { alpha } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
@@ -9,9 +9,10 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 type Props = {
   value: number;
+  duration: boolean;
 };
 
-const Co2Card: VFC<Props> = ({ value }) => {
+const Co2Card: VFC<Props> = ({ value, duration = false }) => {
   return (
     <Card
       sx={{
@@ -42,7 +43,9 @@ const Co2Card: VFC<Props> = ({ value }) => {
       >
         <AccessTimeIcon width={24} height={24} />
       </Box>
-      <Typography variant="h3">{formatDate(value)}</Typography>
+      <Typography variant="h3">
+        {duration ? formatDuration(value) : formatDate(value)}
+      </Typography>
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
         Time
       </Typography>

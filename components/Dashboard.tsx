@@ -32,10 +32,10 @@ const Dashboard: VFC = () => {
       setSensors(null);
     }
   }, [data]);
-  if (error) return <div>failed to load</div>;
   const theme = useTheme();
   const small = useMediaQuery(theme.breakpoints.down("sm"));
   const large = useMediaQuery(theme.breakpoints.up("md"));
+  if (error) return <div>failed to load</div>;
 
   return (
     <Container maxWidth="lg">

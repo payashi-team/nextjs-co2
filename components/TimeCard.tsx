@@ -9,7 +9,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 type Props = {
   value: number;
-  duration: boolean;
+  duration?: boolean;
 };
 
 const Co2Card: VFC<Props> = ({ value, duration = false }) => {

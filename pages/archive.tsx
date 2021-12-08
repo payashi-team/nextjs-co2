@@ -52,7 +52,7 @@ const Archive: VFC = () => {
       setSensors(data.vals);
     }
     setQuery({ ...query, ready: false });
-  }, [data]);
+  }, [data, query]);
   if (error) return <div>failed to load</div>;
 
   return (

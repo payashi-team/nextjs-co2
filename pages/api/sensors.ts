@@ -13,11 +13,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<SensorsRes>
 ) {
+  const limit = 100;
   // const start = req.query.start ? parseInt(req.query.start as string) : 0;
   const snap = await db
     .ref("/SCD30")
     .orderByChild("sensor_timestamp")
-    .limitToLast(500)
+    .startAfter(Date.now() - 1000 * limit * 2 * 2)
+    .limitToLast(limit)
     .get();
   // .orderByChild("sensor_timestamp")
   // .startAt(start)

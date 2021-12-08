@@ -1,19 +1,24 @@
 import React, { useEffect, VFC } from "react";
-import Chart from "react-google-charts";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Grid from "@mui/material/Grid";
 import useSWR from "swr";
 import { SensorsRes } from "pages/api/sensors";
 import { Sensor } from "sensor";
 import Container from "@mui/material/Container";
+import Co2Card from "@components/Co2Card";
+import HumidityCard from "@components/HumiditiyCard";
+import TemperatureCard from "@components/TemperatureCard";
+import TimeCard from "@components/TimeCard";
+import Co2Chart from "@components/Co2Chart";
+import HumidityChart from "@components/HumidityChart";
+import TemperatureChart from "@components/TemperatureChart";
+import AccChart from "@components/AccChart";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 const Dashboard: VFC = () => {
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
   const [sensors, setSensors] = React.useState<Array<Sensor> | null>(null);
-  // const [error, setError] = React.useState<string | undefined>(undefined);
   const { data, error } = useSWR<SensorsRes>(`/api/sensors`, fetcher, {
     refreshInterval: 2000,
   });
@@ -25,6 +30,9 @@ const Dashboard: VFC = () => {
     }
   }, [data]);
   if (error) return <div>failed to load</div>;
+  const theme = useTheme();
+  const small = useMediaQuery(theme.breakpoints.down("sm"));
+  const large = useMediaQuery(theme.breakpoints.up("md"));
 
   return (
     <Container maxWidth="lg">
@@ -36,61 +44,32 @@ const Dashboard: VFC = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       ) : sensors.length > 0 ? (
-        <>
-          {/* <ButtonGroup
-            variant="contained"
-            aria-label="outlined primary button group"
-          >
-            <Button>all</Button>
-          </ButtonGroup> */}
-          <Chart
-            width={"100%"}
-            height={"60vh"}
-            chartType="Line"
-            data={[
-              ["Time", "Temperetures", "CO2"],
-              ...sensors.map((sensor) => {
-                return [
-                  new Date(sensor.sensor_timestamp),
-                  // sensor.X,
-                  // sensor.Y,
-                  // sensor.Z,
-                  sensor.temp,
-                  sensor.co2,
-                ];
-              }),
-            ]}
-            formatters={[
-              {
-                type: "DateFormat",
-                column: 0,
-                options: {
-                  formatType: "short",
-                },
-              },
-            ]}
-            loader={<div>Loading Chart</div>}
-            options={{
-              legend: { position: "none" },
-              chart: {
-                title: "CO2, Temperatures",
-              },
-              series: {
-                0: {
-                  axis: "Temperatures",
-                  color: "blue",
-                },
-                1: { axis: "CO2", color: "red" },
-              },
-              axes: {
-                y: {
-                  Temperatures: { label: "Temps (Celsius)" },
-                  CO2: { label: "CO2 (ppm)" },
-                },
-              },
-            }}
-          />
-        </>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Co2Card value={sensors[sensors.length - 1].co2} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <HumidityCard value={sensors[sensors.length - 1].humid} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <TemperatureCard value={sensors[sensors.length - 1].temp} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <TimeCard value={sensors[sensors.length - 1].sensor_timestamp} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Co2Chart data={sensors} large={large} small={small} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <HumidityChart data={sensors} large={large} small={small} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TemperatureChart data={sensors} large={large} small={small} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <AccChart data={sensors} large={large} small={small} />
+          </Grid>
+        </Grid>
       ) : (
         <Grid
           container

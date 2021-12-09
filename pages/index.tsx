@@ -16,6 +16,7 @@ import TemperatureChart from "@components/TemperatureChart";
 import AccChart from "@components/AccChart";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { NextPage } from "next";
+import Head from "next/head";
 
 const Home: NextPage = () => {
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
@@ -41,6 +42,9 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>Home | USAOMOCHI</title>
+      </Head>
       {!sensors ? (
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -9,7 +9,6 @@ import Avatar from "@mui/material/Avatar";
 import { grey, green } from "@mui/material/colors";
 import Image from "next/image";
 import { Container, createTheme, ThemeProvider } from "@mui/material";
-import Link from "next/link";
 
 const theme = createTheme({
   palette: {
@@ -39,9 +38,18 @@ function MyApp({ Component, pageProps }: AppProps) {
                 right: "30px",
               }}
             >
-              <a href="https://line.me/R/ti/p/%40444rlonw" target="_blank">
+              <a
+                href="https://line.me/R/ti/p/%40444rlonw"
+                target="_blank"
+                rel="noreferrer"
+              >
                 <Avatar alt="USAOMOCHI">
-                  <Image src="/images/usamo.png" width={64} height={64} />
+                  <Image
+                    src="/images/usamo.png"
+                    width={64}
+                    height={64}
+                    alt="usamo profile"
+                  />
                 </Avatar>
               </a>
             </Fab>

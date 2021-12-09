@@ -31,7 +31,6 @@ export default class Document extends NextDocument {
           <link rel="shortcut icon" href="/favicons/favicon.ico" />
           <meta name="theme-color" content="#ffffff" />
           <meta name="description" content="Realtime CO2 Monitor" />
-          <title>USAOMOCHI</title>
         </Head>
         <body>
           <Main />

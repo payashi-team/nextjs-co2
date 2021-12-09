@@ -19,8 +19,8 @@ const Co2Card: VFC<Props> = ({ value, duration = false }) => {
         boxShadow: "none",
         textAlign: "center",
         padding: (theme) => theme.spacing(5, 0),
-        color: grey[500],
-        backgroundColor: grey[50],
+        color: grey[200],
+        backgroundColor: grey[400],
       }}
     >
       <Box

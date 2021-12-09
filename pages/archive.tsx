@@ -53,6 +53,10 @@ const Archive: VFC = () => {
         setSensors(data.vals);
         setQuery({ ...query, ready: false });
       },
+      onError: (err) => {
+        console.error(err);
+        setQuery({ ...query, ready: false });
+      },
     }
   );
   if (error) return <div>failed to load</div>;
@@ -77,6 +81,7 @@ const Archive: VFC = () => {
                 <Grid container spacing={3}>
                   <Grid item md={6} xs={12}>
                     <DateTimePicker
+                      mask="____/__/__ __:__"
                       label="start"
                       value={query.start}
                       onChange={(value) => {
@@ -89,6 +94,7 @@ const Archive: VFC = () => {
                   </Grid>
                   <Grid item md={6} xs={12}>
                     <DateTimePicker
+                      mask="____/__/__ __:__"
                       label="end"
                       value={query.end}
                       onChange={(value) => {
@@ -115,7 +121,14 @@ const Archive: VFC = () => {
             </Card>
           </form>
         </Box>
-        <Box my={2}>
+        <Box
+          sx={{
+            my: 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <ButtonGroup
             variant="contained"
             aria-label="outlined primary button group"
@@ -129,10 +142,10 @@ const Archive: VFC = () => {
                 });
               }}
             >
-              Day 01
+              12/07
             </Button>
-            <Button>Day 02</Button>
-            <Button>Day 03</Button>
+            <Button>12/14</Button>
+            <Button>12/21</Button>
             <Button
               onClick={() => {
                 setQuery({
@@ -147,19 +160,19 @@ const Archive: VFC = () => {
             </Button>
           </ButtonGroup>
         </Box>
-        {!sensors && !query.ready ? (
-          <Grid container justifyContent="center">
-            <Grid item>
-              <h1>Query Something</h1>
-            </Grid>
-          </Grid>
-        ) : !sensors ? (
+        {query.ready ? (
           <Backdrop
             sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
             open={true}
           >
             <CircularProgress color="inherit" />
           </Backdrop>
+        ) : !query.start || !query.end || !sensors ? (
+          <Grid container justifyContent="center">
+            <Grid item>
+              <h1>Query Something</h1>
+            </Grid>
+          </Grid>
         ) : sensors.length > 0 ? (
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} md={3}>
@@ -210,7 +223,11 @@ const Archive: VFC = () => {
         ) : (
           <Grid
             container
-            sx={{ width: "100vw", height: "60vh" }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
             justifyContent="center"
           >
             <Grid item>
@@ -223,7 +240,7 @@ const Archive: VFC = () => {
             <Typography
               variant="h5"
               component="h5"
-              textAlign={"end"}
+              textAlign="end"
               gutterBottom
             >
               → Back to Home

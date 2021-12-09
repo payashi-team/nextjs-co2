@@ -21,20 +21,12 @@ import Head from "next/head";
 const Home: NextPage = () => {
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
   const [sensors, setSensors] = React.useState<Array<Sensor> | null>(null);
-  const { data, error } = useSWR<{ vals: Array<Sensor> }>(
-    `/api/realtime`,
-    fetcher,
-    {
-      refreshInterval: 2000,
-    }
-  );
-  useEffect(() => {
-    if (data?.vals) {
+  const { error } = useSWR<{ vals: Array<Sensor> }>(`/api/realtime`, fetcher, {
+    refreshInterval: 2000,
+    onSuccess: (data) => {
       setSensors(data.vals);
-    } else {
-      setSensors(null);
-    }
-  }, [data]);
+    },
+  });
   const theme = useTheme();
   const small = useMediaQuery(theme.breakpoints.down("sm"));
   const large = useMediaQuery(theme.breakpoints.up("md"));
@@ -82,7 +74,11 @@ const Home: NextPage = () => {
       ) : (
         <Grid
           container
-          sx={{ width: "100vw", height: "60vh" }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
           justifyContent="center"
         >
           <Grid item>

@@ -18,8 +18,8 @@ const theme = createTheme({
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDateFns} locale={jaLocale}>
+    <LocalizationProvider dateAdapter={AdapterDateFns} locale={jaLocale}>
+      <ThemeProvider theme={theme}>
         <Box
           sx={{
             width: "100vw",
@@ -55,8 +55,8 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Fab>
           </Container>
         </Box>
-      </LocalizationProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </LocalizationProvider>
   );
 }
 

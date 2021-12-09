@@ -21,6 +21,12 @@ export default async function handler(
     .endAt(end || 0)
     .get();
 
+  if (!snap.exists()) {
+    res.status(200).json({
+      vals: [],
+    });
+  }
+
   const data = snap.val() as { [key: string]: Sensor };
 
   const vals: Array<Sensor> = [];

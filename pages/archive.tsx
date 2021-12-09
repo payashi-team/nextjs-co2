@@ -1,4 +1,4 @@
-import React, { useEffect, useState, VFC } from "react";
+import React, { useState, VFC } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
@@ -14,6 +14,7 @@ import HumidityChart from "@components/HumidityChart";
 import TemperatureChart from "@components/TemperatureChart";
 import AccChart from "@components/AccChart";
 import { useMediaQuery, useTheme } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
@@ -24,6 +25,7 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import Head from "next/head";
+import Link from "next/link";
 
 const Archive: VFC = () => {
   const theme = useTheme();
@@ -39,20 +41,20 @@ const Archive: VFC = () => {
     ready: false,
   });
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
-  const [sensors, setSensors] = React.useState<Array<Sensor> | null>(null);
-  const { data, error } = useSWR<{ vals: Array<Sensor> }>(
+  const [sensors, setSensors] = useState<Array<Sensor> | null>(null);
+  const { error } = useSWR<{ vals: Array<Sensor> }>(
     () =>
       query.ready
         ? `/api/archive?start=${query.start?.getTime()}&end=${query.end?.getTime()}`
         : null,
-    fetcher
-  );
-  useEffect(() => {
-    if (data?.vals) {
-      setSensors(data.vals);
+    fetcher,
+    {
+      onSuccess: (data) => {
+        setSensors(data.vals);
+        setQuery({ ...query, ready: false });
+      },
     }
-    setQuery({ ...query, ready: false });
-  }, [data, query]);
+  );
   if (error) return <div>failed to load</div>;
 
   return (
@@ -216,6 +218,18 @@ const Archive: VFC = () => {
             </Grid>
           </Grid>
         )}
+        <Link href="/">
+          <a>
+            <Typography
+              variant="h5"
+              component="h5"
+              textAlign={"end"}
+              gutterBottom
+            >
+              → Back to Home
+            </Typography>
+          </a>
+        </Link>
       </Container>
     </>
   );

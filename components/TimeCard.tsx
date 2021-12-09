@@ -47,7 +47,7 @@ const Co2Card: VFC<Props> = ({ value, duration = false }) => {
         {duration ? formatDuration(value) : formatDate(value)}
       </Typography>
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
-        Time
+        {duration ? "Duration" : "Time"}
       </Typography>
     </Card>
   );

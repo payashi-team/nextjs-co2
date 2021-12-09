@@ -44,7 +44,7 @@ const TemperatureCard: VFC<Props> = ({ value }) => {
       </Box>
       <Typography variant="h3">{formatNumber(value)}</Typography>
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
-        Temperature (ppm)
+        Temperature (°C)
       </Typography>
     </Card>
   );

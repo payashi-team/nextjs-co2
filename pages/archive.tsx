@@ -26,6 +26,7 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import Head from "next/head";
 import Link from "next/link";
+import { filterSensors } from "@lib/utils";
 
 const Archive: VFC = () => {
   const theme = useTheme();
@@ -50,7 +51,7 @@ const Archive: VFC = () => {
     fetcher,
     {
       onSuccess: (data) => {
-        setSensors(data.vals.filter((s) => s.co2 !== 0));
+        setSensors(filterSensors(data.vals));
         setQuery({ ...query, ready: false });
       },
       onError: (err) => {

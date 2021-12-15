@@ -24,7 +24,7 @@ const Home: NextPage = () => {
   const { error } = useSWR<{ vals: Array<Sensor> }>(`/api/realtime`, fetcher, {
     refreshInterval: 2000,
     onSuccess: (data) => {
-      setSensors(data.vals);
+      setSensors(data.vals.filter((s) => s.co2 !== 0));
     },
   });
   const theme = useTheme();

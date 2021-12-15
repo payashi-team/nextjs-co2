@@ -50,7 +50,7 @@ const Archive: VFC = () => {
     fetcher,
     {
       onSuccess: (data) => {
-        setSensors(data.vals);
+        setSensors(data.vals.filter((s) => s.co2 !== 0));
         setQuery({ ...query, ready: false });
       },
       onError: (err) => {
@@ -144,7 +144,17 @@ const Archive: VFC = () => {
             >
               12/07
             </Button>
-            <Button>12/14</Button>
+            <Button
+              onClick={() => {
+                setQuery({
+                  start: new Date(2021, 11, 14, 13),
+                  end: new Date(2021, 11, 14, 17),
+                  ready: true,
+                });
+              }}
+            >
+              12/14
+            </Button>
             <Button>12/21</Button>
             <Button
               onClick={() => {

@@ -13,7 +13,7 @@ export default async function handler(
 ) {
   const limit = 100;
   const snap = await db
-    .ref("/SCD30")
+    .child("SCD30")
     .orderByChild("sensor_timestamp")
     .startAfter(Date.now() - 1000 * limit * 2 * 2)
     .limitToLast(limit)

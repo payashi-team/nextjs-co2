@@ -17,10 +17,10 @@ export default async function handler(
 ) {
   // const limit = 3000;
   const start = parseInt(req.query.start as string);
-  let end = parseInt(req.query.end as string);
+  const end = parseInt(req.query.end as string);
 
   const snap = await db
-    .ref("/SCD30")
+    .child("SCD30")
     .orderByChild("sensor_timestamp")
     .startAt(start)
     .endAt(end)

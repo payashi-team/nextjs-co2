@@ -50,13 +50,15 @@ const Archive: VFC = () => {
   });
   const fetcher = async (urls: string) => {
     return Promise.all(
-      urls
-        .split(",")
-        .map((url) =>
-          fetch(url).then(
-            (res) => res.json() as Promise<{ vals: Array<Sensor> }>
-          )
-        )
+      urls.split(",").map((url, i) => {
+        return new Promise((resolve) => setTimeout(resolve, i * 1000)).then(
+          () => {
+            return fetch(url).then(
+              (res) => res.json() as Promise<{ vals: Array<Sensor> }>
+            );
+          }
+        );
+      })
     ).then((res) => {
       return res.map((r) => r.vals).flat();
     });

@@ -27,11 +27,11 @@ const getUrls = (start?: Date, end?: Date) => {
   const s = start.getTime();
   const e = end.getTime();
   const urls = [];
-  for (let i = s; i <= e; i += 1000 * 60 * 60 * 24) {
-    const j = Math.min(i + 1000 * 60 * 60 * 24, e);
+  const duration = 1000 * 60 * 60 * 24;
+  for (let i = s; i <= e; i += duration) {
+    const j = Math.min(i + duration, e);
     urls.push(`/api/archive?start=${i}&end=${j}`);
   }
-  console.log("urls", urls);
   return urls;
 };
 

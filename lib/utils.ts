@@ -16,27 +16,17 @@ export function formatDuration(date: number): string {
 }
 
 export function filterSensors(sensors: Array<Sensor>): Array<XSensor> {
-  let size = sensors.length;
-  if (size == 0) return [];
+  if (sensors.length == 0) return [];
   const duration =
-    sensors[size - 1].sensor_timestamp - sensors[0].sensor_timestamp;
+    sensors[sensors.length - 1].sensor_timestamp - sensors[0].sensor_timestamp;
   const lapse = Math.max(duration / 100, 1000 * 10);
+  sensors = sensors.filter(
+    (v, i) => i % (((sensors.length / 1000) | 0) + 1) === 0
+  );
 
-  sensors = sensors.filter((v, i) => {
-    return (
-      i % (((size / 1000) | 0) + 1) === 0 &&
-      0 < v.co2 &&
-      v.co2 < 3000 &&
-      -100 < v.temp &&
-      v.temp < 100 &&
-      0 <= v.humid &&
-      v.humid < 100
-    );
-  });
-  size = sensors.length;
+  let ret: Array<XSensor> = [];
 
-  let ret = [] as Array<XSensor>;
-  for (let i = 1; i < size; i++) {
+  for (let i = 1; i < sensors.length; i++) {
     const prev = sensors[i - 1];
     const cur = sensors[i];
     ret.push(prev);
@@ -46,6 +36,6 @@ export function filterSensors(sensors: Array<Sensor>): Array<XSensor> {
       });
     }
   }
-  ret.push(sensors[size - 1]);
+  ret.push(sensors[sensors.length - 1]);
   return ret;
 }

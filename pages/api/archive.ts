@@ -5,7 +5,6 @@ import { Sensor } from "sensor";
 
 export type SensorsRes = {
   vals: Array<Sensor>;
-  nextCursor?: number;
 };
 
 type ErrorResponse = {
@@ -19,13 +18,6 @@ export default async function handler(
   // const limit = 3000;
   const start = parseInt(req.query.start as string);
   let end = parseInt(req.query.end as string);
-  let nextCursor: number | undefined;
-  if (end - start > 1000 * 60 * 60 * 24) {
-    end = start + 1000 * 60 * 60 * 24;
-    nextCursor = end;
-  } else {
-    nextCursor = undefined;
-  }
 
   const snap = await db
     .ref("/SCD30")
@@ -36,9 +28,8 @@ export default async function handler(
     .catch((e) => {
       console.error(e);
       res.status(500).json({ error: "Server error" });
+      return;
     });
-
-  console.log(snap?.exists());
 
   if (!snap || !snap.exists()) {
     res.status(200).json({
@@ -47,18 +38,35 @@ export default async function handler(
     return;
   }
 
-  const data = snap.val() as { [key: string]: Sensor };
-
-  const vals: Array<Sensor> = [];
-  let i = 0;
-  const len = Object.keys(data).length;
-  for (const key in data) {
-    i++;
-    if (i >= len / 1000) {
-      vals.push(data[key]);
-      i = 0;
+  const sensors = Object.values(snap.val()) as Array<Sensor>;
+  let compact = [] as Array<Sensor>;
+  for (let i = 1; i < sensors.length - 1; i++) {
+    const prev = sensors[i - 1];
+    const cur = sensors[i];
+    const next = sensors[i + 1];
+    if (next.sensor_timestamp - prev.sensor_timestamp < 1000 * 10) {
+      if (
+        Math.abs(cur.co2 - prev.co2) + Math.abs(cur.co2 - next.co2) > 200 ||
+        Math.abs(cur.temp - prev.temp) + Math.abs(cur.temp - next.temp) > 5 ||
+        Math.abs(cur.humid - prev.humid) + Math.abs(cur.humid - next.humid) > 5
+      ) {
+        continue;
+      }
+    }
+    if (
+      0 < cur.co2 &&
+      cur.co2 <= 3000 &&
+      -100 < cur.temp &&
+      cur.temp < 50 &&
+      0 < cur.humid &&
+      cur.humid <= 100
+    ) {
+      compact.push(cur);
     }
   }
+  const vals = compact.filter(
+    (v, i) => i % (((compact.length / 1000) | 0) + 1) === 0
+  );
 
-  res.status(200).json({ vals, nextCursor });
+  res.status(200).json({ vals });
 }

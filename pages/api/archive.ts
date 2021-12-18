@@ -5,6 +5,7 @@ import { Sensor } from "sensor";
 
 export type SensorsRes = {
   vals: Array<Sensor>;
+  nextCursor?: number;
 };
 
 type ErrorResponse = {
@@ -17,13 +18,20 @@ export default async function handler(
 ) {
   // const limit = 3000;
   const start = parseInt(req.query.start as string);
-  const end = parseInt(req.query.end as string);
+  let end = parseInt(req.query.end as string);
+  let nextCursor: number | undefined;
+  if (end - start > 1000 * 60 * 60 * 24) {
+    end = start + 1000 * 60 * 60 * 24;
+    nextCursor = end;
+  } else {
+    nextCursor = undefined;
+  }
 
   const snap = await db
     .ref("/SCD30")
     .orderByChild("sensor_timestamp")
-    .startAt(start || 0)
-    .endAt(end || 0)
+    .startAt(start)
+    .endAt(end)
     .get()
     .catch((e) => {
       console.error(e);
@@ -52,5 +60,5 @@ export default async function handler(
     }
   }
 
-  res.status(200).json({ vals });
+  res.status(200).json({ vals, nextCursor });
 }

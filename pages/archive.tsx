@@ -28,30 +28,57 @@ import Head from "next/head";
 import Link from "next/link";
 import { filterSensors } from "@lib/utils";
 
+const getUrls = (start?: Date, end?: Date) => {
+  if (!start || !end) {
+    return [];
+  }
+  const s = start.getTime();
+  const e = end.getTime();
+  if (s > e) {
+    console.error("start is after end");
+    return [];
+  }
+  const urls = [];
+  for (let i = s; i <= e; i += 1000 * 60 * 60 * 24) {
+    const j = Math.min(i + 1000 * 60 * 60 * 24, e);
+    urls.push(`/api/archive?start=${i}&end=${j}`);
+  }
+  return urls;
+};
+
 const Archive: VFC = () => {
   const theme = useTheme();
   const small = useMediaQuery(theme.breakpoints.down("sm"));
   const large = useMediaQuery(theme.breakpoints.up("md"));
   const [query, setQuery] = useState<{
-    start: Date | null;
-    end: Date | null;
+    start?: Date;
+    end?: Date;
     ready: boolean;
   }>({
-    start: null,
-    end: null,
+    start: undefined,
+    end: undefined,
     ready: false,
   });
-  const fetcher = async (url: string) => fetch(url).then((res) => res.json());
+  const fetcher = async (urls: string) => {
+    return Promise.all(
+      urls
+        .split(",")
+        .map((url) =>
+          fetch(url).then(
+            (res) => res.json() as Promise<{ vals: Array<Sensor> }>
+          )
+        )
+    ).then((res) => {
+      return res.map((r) => r.vals).flat();
+    });
+  };
   const [sensors, setSensors] = useState<Array<Sensor> | null>(null);
-  const { error } = useSWR<{ vals: Array<Sensor> }>(
-    () =>
-      query.ready
-        ? `/api/archive?start=${query.start?.getTime()}&end=${query.end?.getTime()}`
-        : null,
+  const { error } = useSWR<Array<Sensor>>(
+    () => (query.ready ? getUrls(query.start, query.end).join(",") : null),
     fetcher,
     {
       onSuccess: (data) => {
-        setSensors(filterSensors(data.vals));
+        setSensors(filterSensors(data));
         setQuery({ ...query, ready: false });
       },
       onError: (err) => {
@@ -86,7 +113,7 @@ const Archive: VFC = () => {
                       label="start"
                       value={query.start}
                       onChange={(value) => {
-                        setQuery({ ...query, start: value });
+                        setQuery({ ...query, start: value || undefined });
                       }}
                       renderInput={(params) => (
                         <TextField {...params} fullWidth />
@@ -99,7 +126,7 @@ const Archive: VFC = () => {
                       label="end"
                       value={query.end}
                       onChange={(value) => {
-                        setQuery({ ...query, end: value });
+                        setQuery({ ...query, end: value || undefined });
                       }}
                       renderInput={(params) => (
                         <TextField {...params} fullWidth />
@@ -160,8 +187,8 @@ const Archive: VFC = () => {
             <Button
               onClick={() => {
                 setQuery({
-                  start: null,
-                  end: null,
+                  start: undefined,
+                  end: undefined,
                   ready: false,
                 });
                 setSensors(null);

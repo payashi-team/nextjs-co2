@@ -48,20 +48,17 @@ const Archive: VFC = () => {
     end: undefined,
     ready: false,
   });
+  // Promise.all is better, but it doesn't work due to a Firebase's Bug
+  // https://groups.google.com/g/firebase-talk/c/VpQms_TnBOw?pli=1
   const fetcher = async (urls: string) => {
-    return Promise.all(
-      urls.split(",").map((url, i) => {
-        return new Promise((resolve) => setTimeout(resolve, i * 1000)).then(
-          () => {
-            return fetch(url).then(
-              (res) => res.json() as Promise<{ vals: Array<Sensor> }>
-            );
-          }
-        );
-      })
-    ).then((res) => {
-      return res.map((r) => r.vals).flat();
-    });
+    const ret = await urls.split(",").reduce(async (acc, url) => {
+      return acc.then((prev) =>
+        fetch(url)
+          .then((res) => res.json())
+          .then((json: { vals: Array<Sensor> }) => [...prev, ...json.vals])
+      );
+    }, Promise.resolve([] as Array<Sensor>));
+    return ret;
   };
   const [sensors, setSensors] = useState<Array<XSensor> | null>(null);
   const { error } = useSWR<Array<Sensor>>(

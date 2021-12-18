@@ -7,3 +7,5 @@ export type Sensor = {
   temp: number;
   sensor_timestamp: number;
 };
+
+export type XSensor = Partial<Sensor> & { sensor_timestamp: number };

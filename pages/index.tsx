@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid";
 import Link from "next/link";
 import Typography from "@mui/material/Typography";
 import useSWR from "swr";
-import { Sensor } from "sensor";
+import { Sensor, XSensor } from "sensor";
 import Co2Card from "@components/Co2Card";
 import HumidityCard from "@components/HumiditiyCard";
 import TemperatureCard from "@components/TemperatureCard";
@@ -21,7 +21,7 @@ import { filterSensors } from "@lib/utils";
 
 const Home: NextPage = () => {
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
-  const [sensors, setSensors] = React.useState<Array<Sensor> | null>(null);
+  const [sensors, setSensors] = React.useState<Array<XSensor> | null>(null);
   const { error } = useSWR<{ vals: Array<Sensor> }>(`/api/realtime`, fetcher, {
     refreshInterval: 2000,
     onSuccess: (data) => {
@@ -48,13 +48,13 @@ const Home: NextPage = () => {
       ) : sensors.length > 0 ? (
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <Co2Card value={sensors[sensors.length - 1].co2} />
+            <Co2Card value={sensors[sensors.length - 1].co2 || 0} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <HumidityCard value={sensors[sensors.length - 1].humid} />
+            <HumidityCard value={sensors[sensors.length - 1].humid || 0} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <TemperatureCard value={sensors[sensors.length - 1].temp} />
+            <TemperatureCard value={sensors[sensors.length - 1].temp || 0} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <TimeCard value={sensors[sensors.length - 1].sensor_timestamp} />

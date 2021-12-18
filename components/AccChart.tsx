@@ -1,9 +1,9 @@
 import { VFC } from "react";
 import Chart from "react-google-charts";
-import { Sensor } from "sensor";
+import { XSensor } from "sensor";
 
 type Props = {
-  data: Array<Sensor>;
+  data: Array<XSensor>;
   small: boolean;
   large: boolean;
 };

@@ -27,10 +27,11 @@ export default async function handler(
     .endAt(end)
     .get()
     .catch((e) => {
-      console.error(e);
+      console.error("Error getting data", e);
       res.status(500).json({ error: "Server error" });
       return;
     });
+  console.info("Snapshot: ", snap?.val());
 
   if (!snap || !snap.exists()) {
     res.status(200).json({
@@ -38,8 +39,8 @@ export default async function handler(
     });
     return;
   }
-
   const sensors = Object.values(snap.val()) as Array<Sensor>;
+  console.info("sensors[0]: ", sensors[0]);
   const vals = serverFilter(sensors);
 
   res.status(200).json({ vals });

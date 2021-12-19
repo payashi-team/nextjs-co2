@@ -15,4 +15,4 @@ if (!admin.apps.length) {
 
 export default admin;
 
-export const db = admin.database().ref();
+export const db = admin.database();

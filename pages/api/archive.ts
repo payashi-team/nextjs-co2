@@ -21,7 +21,7 @@ export default async function handler(
   const end = parseInt(req.query.end as string);
 
   const snap = await db
-    .child("SCD30")
+    .ref("SCD30")
     .orderByChild("sensor_timestamp")
     .startAt(start)
     .endAt(end)
@@ -29,8 +29,10 @@ export default async function handler(
     .catch((e) => {
       console.error("Error getting data", e);
       res.status(500).json({ error: "Server error" });
-      return;
     });
+  if (!snap) {
+    return;
+  }
   console.info("Snapshot: ", snap?.val());
 
   if (!snap || !snap.exists()) {

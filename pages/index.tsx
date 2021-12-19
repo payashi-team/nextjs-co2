@@ -17,7 +17,7 @@ import AccChart from "@components/AccChart";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import Head from "next/head";
-import { filterSensors } from "@lib/utils";
+import { clientFilter } from "@lib/utils";
 
 const Home: NextPage = () => {
   const fetcher = async (url: string) => fetch(url).then((res) => res.json());
@@ -25,7 +25,7 @@ const Home: NextPage = () => {
   const { error } = useSWR<{ vals: Array<Sensor> }>(`/api/realtime`, fetcher, {
     refreshInterval: 2000,
     onSuccess: (data) => {
-      setSensors(filterSensors(data.vals));
+      setSensors(clientFilter(data.vals));
     },
   });
   const theme = useTheme();

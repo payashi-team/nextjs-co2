@@ -17,7 +17,7 @@ import { useMediaQuery, useTheme } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Head from "next/head";
 import Link from "next/link";
-import { filterSensors } from "@lib/utils";
+import { clientFilter} from "@lib/utils";
 import QueryBox from "@components/QueryBox";
 
 const getUrls = (start?: Date, end?: Date) => {
@@ -74,7 +74,7 @@ const Archive: VFC = () => {
     fetcher,
     {
       onSuccess: (data) => {
-        setSensors(filterSensors(data));
+        setSensors(clientFilter(data));
         setQuery({ ...query, ready: false });
       },
       onError: (err) => {

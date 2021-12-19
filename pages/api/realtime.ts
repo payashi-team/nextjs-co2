@@ -1,4 +1,5 @@
 import { db } from "@lib/server-app";
+import { serverFilter } from "@lib/utils";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Sensor } from "sensor";
@@ -19,11 +20,8 @@ export default async function handler(
     .limitToLast(limit)
     .get();
 
-  const data = snap.val() as { [key: string]: Sensor };
+  const sensors = Object.values(snap.val()) as Array<Sensor>;
+  const vals = serverFilter(sensors);
 
-  const vals: Array<Sensor> = [];
-  for (const key in data) {
-    vals.push(data[key]);
-  }
   res.status(200).json({ vals });
 }

@@ -87,7 +87,7 @@ const Home: NextPage = () => {
           </Grid>
         </Grid>
       )}
-      <Link href="/archive">
+      {/* <Link href="/archive">
         <a>
           <Typography
             variant="h5"
@@ -98,7 +98,7 @@ const Home: NextPage = () => {
             → See the archive
           </Typography>
         </a>
-      </Link>
+      </Link> */}
     </>
   );
 };

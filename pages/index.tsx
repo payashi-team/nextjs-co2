@@ -36,7 +36,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Home | USAOMOCHI</title>
+        <title>USAOMOCHI</title>
       </Head>
       {!sensors ? (
         <Backdrop
